@@ -1,4 +1,3 @@
-% INITIALIZE THE NEURAL NETWORK PROBLEM %
 clear all;
 
 load pulsar_data.mat;
@@ -25,13 +24,20 @@ valT = t(:, val_ind);
 testX = x(:, test_ind);
 testT = t(:, test_ind);
 
-%% 
-%%%%% Defining the loss function
-% w is the variable in the function defined below, which are the NN
-% weights. 
+%%
 fun = @(w) ce_test(w, net, trainX, trainT);
 
-%%%%% Constructing the initial weight vector -
+% Unbounded
+lb = -inf;
+ub = inf;
+
+% Add 'Display' option to display result of iterations
+% Adding a function tolerance of 1e-4 (one of stopping criteria)
+sa_opts = saoptimset('TolFun', 1e-4, 'Display', 'iter', 'PlotFcns', {@saplotbestf, @saplotf});
+sa_opts.MaxFunEvals = 100; % For consistency across solvers
+sa_opts.InitialTemperature = 5;
+sa_opts.AnnealingFcn = @annealingboltz;
+
 % There is n_attr attributes in dataset, and there are n neurons so there 
 % are total of n_attr*n input weights (uniform weight)
 initial_il_weights = ones(1, n_attr*n)/(n_attr*n);
@@ -42,41 +48,22 @@ initial_il_bias    = rand(1, n);
 initial_ol_weights = ones(1, n_class*n)/(n_class*n);
 % There are n_class bias values, one for each output neuron (random)
 initial_ol_bias    = rand(1, n_class);
-% starting values
+% Starting values
 starting_values = [initial_il_weights, initial_il_bias, ...
                    initial_ol_weights, initial_ol_bias];
-% Setting the Genetic Algorithms tolerance for
-% minimum change in fitness function before
-% terminating algorithm to 1e-4 and displaying
-% each iteration's results.
-ga_opts = gaoptimset('TolFun',1e-4,'Display','iter', 'PlotFcn', @gaplotbestf);
-
-% Limiting the following parameters imply 5000 max function evaluations.
-% This is to maintain consistency for model comparison.
-ga_opts.PopulationSize = 50;
-ga_opts.Generations = 25;
-
-% Total no. of variables in w vector
-nv =  length(starting_values);
-
-%Bounds for the weight vectors
-lb=-10*ones(1,nv);
-ub=10*ones(1,nv);
-
-%Seed for randomization
+               
+% Seed for randomization
 setdemorandstream(100)
 
-% Starting timer
+% Random starting point
+starting_values = rand(1, length(starting_values));
+
 t1 = tic;
-
-% running the genetic algorithm with desired options
-[x_opt_ga, fval, exitFlag, Output] = ga(fun,nv , [], [], [], [], lb, ub, [], ga_opts);
-
-% Stopping timer
+[x_opt_sa, fval, flag, output] = simulannealbnd(fun, starting_values, lb, ub, sa_opts);
 total_time = toc(t1);
 
 %% BEST NETWORK PERFORMANCE
-best_net = setwb(net, x_opt_ga');
+best_net = setwb(net, x_opt_sa');
 
 
 trainY = round(best_net(trainX)); % Rounding converts probabilities into labels

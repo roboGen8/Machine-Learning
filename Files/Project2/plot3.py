@@ -17,20 +17,20 @@ for i in range(len(tsp_str)):
 tsp = np.array(tsp)
 fig, ax = plt.subplots()
 ax.plot(range(np.shape(tsp)[1]), tsp[0,:])
-plt.xlabel("Parameters")
+plt.xlabel("Population")
 plt.ylabel("Optimal fitness values")
 plt.title("GA fitness value for varying parameters")
-plt.xticks(range(np.shape(tsp)[1]), ["p1","p2","p3","p4","p5"])
+plt.xticks(range(np.shape(tsp)[1]), ["10","20","50","100","200"])
 
 plt.show()
 
 #Plotting time
 fig, ax = plt.subplots()
 ax.plot(range(np.shape(tsp)[1]), tsp[1,:])
-plt.xlabel("Parameters")
+plt.xlabel("Population")
 plt.ylabel("Computing time(s)")
 plt.title("GA computing time for varying parameters")
-plt.xticks(range(np.shape(tsp)[1]), ["p1","p2","p3","p4","p5"])
+plt.xticks(range(np.shape(tsp)[1]), ["10","20","50","100","200"])
 
 plt.show()
 

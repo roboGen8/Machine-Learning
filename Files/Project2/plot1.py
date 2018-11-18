@@ -9,6 +9,7 @@ import numpy as np
 with open('travelling_salesman_test.csv') as f:
 	tsp_str = f.readlines()
 
+
 tsp = []
 for i in range(len(tsp_str)):
 	tsp.append(list(map(float, tsp_str[i].strip('\n').strip(',').split(','))))
@@ -21,6 +22,7 @@ labels = ['RHC','SA', 'GA']
 for i in list(range(3)):
 	ax.plot(range(9), tsp[i,:], label = labels[i])
 
+
 plt.xlabel('Iterations')
 plt.ylabel('Best fitness value')
 plt.legend()
@@ -28,13 +30,14 @@ plt.xticks(range(9),['50', '100', '200', '300', '500', '700', '1000', '5000', '1
 plt.title('Optimal fitness values with varying iterations (travelling salesman)')
 plt.show()
 
+
 #Plotting the time taken for each algorithm for varying iterations
 
 fig2, ax = plt.subplots()
 
 l = [4,5,6]
 for i in l:
-	ax.plot(range(9), fpt[i,:], label = labels[i-4])
+	ax.plot(range(9), tsp[i,:], label = labels[i-4])
 
 plt.xlabel('Iterations')
 plt.ylabel('Total time taken')
